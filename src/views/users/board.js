@@ -10,12 +10,14 @@ import {
   FormGroup,
   ModalFooter,
 } from "reactstrap";
+import { Link } from "react-router-dom";
 
 const data = [
-  // Ejemplo de datos iniciales
+  
   { id: 1, firstname: "Alejandro", lastname: "Fernandez", dni: "29345789", typeofuser: "Technical Director" },
   { id: 2, firstname: "Juan", lastname: "Perez", dni: "12345678", typeofuser: "Referee" },
-  // Más datos...
+  
+  
 ];
 
 class App extends React.Component {
@@ -29,6 +31,8 @@ class App extends React.Component {
       lastname: "",
       dni: "",
       typeofuser: "",
+      gender: "",
+      dob:"",
       image: null
     }
   };
@@ -125,7 +129,8 @@ class App extends React.Component {
                   <td>{element.typeofuser}</td>
                   <td>
                     <Button color="btn btn-outline-success" onClick={() => this.viewModalEdit(element)}>Edit</Button>{" "}
-                    <Button color="btn btn-outline-danger" onClick={() => this.delete(element)}>Delete</Button>
+                    <Button color="btn btn-outline-danger" onClick={() => this.delete(element)}>Delete</Button> {"  "}
+                    <Link to="view.js"><Button color="btn btn-outline-info">View</Button></Link>
                   </td>
                 </tr>
               ))}
@@ -136,7 +141,7 @@ class App extends React.Component {
         {/* Modal de Inserción */}
         <Modal isOpen={this.state.modalInsert}>
           <ModalHeader>
-            <div><h3>Create</h3></div>
+            <div></div>
           </ModalHeader>
 
           <ModalBody>
@@ -177,6 +182,38 @@ class App extends React.Component {
                 onChange={this.handleChange}
               />
             </FormGroup>
+            <label htmlFor="dob" className="form-label">Date of Birth</label>
+        <input
+          type="date"
+          className="form-control"
+          name="dob"
+          id="dob"
+          required
+        />
+          <fieldset className="mb-3">
+          <legend className="form-label">Gender</legend>
+          <div>
+            <input
+              type="radio"
+              id="male"
+              name="gender"
+              value="Male"
+              required
+            />
+            <label htmlFor="male" className="ms-2">Male</label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              id="female"
+              name="gender"
+              value="Female"
+              required
+            />
+            <label htmlFor="female" className="ms-2">Female</label>
+          </div>
+         
+        </fieldset>
             <FormGroup>
               <label htmlFor="userType">Type of User</label>
               <select className="form-select" name="typeofuser" id="userType" required onChange={this.handleChange}>
@@ -245,6 +282,38 @@ class App extends React.Component {
                 onChange={this.handleChange}
               />
             </FormGroup>
+            <label htmlFor="dob" className="form-label">Date of Birth</label>
+        <input
+          type="date"
+          className="form-control"
+          name="dob"
+          id="dob"
+          required
+        />
+          <fieldset className="mb-3">
+          <legend className="form-label">Gender</legend>
+          <div>
+            <input
+              type="radio"
+              id="male"
+              name="gender"
+              value="Male"
+              required
+            />
+            <label htmlFor="male" className="ms-2">Male</label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              id="female"
+              name="gender"
+              value="Female"
+              required
+            />
+            <label htmlFor="female" className="ms-2">Female</label>
+          </div>
+         
+        </fieldset>
             <FormGroup>
               <label htmlFor="userType">Type of User</label>
               <select className="form-select" name="typeofuser" id="userType" required value={this.state.form.typeofuser} onChange={this.handleChange}>
