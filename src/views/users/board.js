@@ -4,7 +4,6 @@ import {
   Table,
   Button,
   Container,
-  Modal,
   ModalHeader,
   ModalBody,
   FormGroup,
@@ -14,7 +13,7 @@ import { Link } from "react-router-dom";
 
 const data = [
   
-  { id: 1, firstname: "Alejandro", lastname: "Fernandez", dni: "29345789", typeofuser: "Technical Director" },
+  { id: 1, firstname: "Alejandro", dni: "29345789", typeofuser: "Technical Director" },
   { id: 2, firstname: "Juan", lastname: "Perez", dni: "12345678", typeofuser: "Referee" },
   
   
@@ -85,7 +84,6 @@ class App extends React.Component {
   };
 
   closeModalEdit = () => {
-    this.setState({ modalUpdate: false });
   };
 
   edit = (form) => {
@@ -217,10 +215,6 @@ class App extends React.Component {
             <FormGroup>
               <label htmlFor="userType">Type of User</label>
               <select className="form-select" name="typeofuser" id="userType" required onChange={this.handleChange}>
-                <option value="">Select one</option>
-                <option value="Technical Director">Technical Director</option>
-                <option value="Referee">Referee</option>
-                <option value="Player">Player</option>
               </select>
             </FormGroup>
             <FormGroup>
@@ -230,7 +224,7 @@ class App extends React.Component {
           </ModalBody>
 
           <ModalFooter>
-            <Button color="btn btn-outline-success" onClick={this.insert}>Insert</Button>
+            <Button color="btn btn-outline-success" onClick={() => {}}>Insert</Button>
             <Button color="btn btn-outline-danger" onClick={this.closeModalInsert}>Cancel</Button>
           </ModalFooter>
         </Modal>
@@ -330,7 +324,7 @@ class App extends React.Component {
           </ModalBody>
 
           <ModalFooter>
-            <Button color="btn btn-outline-success" onClick={() => this.edit(this.state.form)}>Edit</Button>
+            <Button color="btn btn-outline-success" onClick={() => this.edit(this.state)}>Edit</Button>
             <Button color="btn btn-outline-danger" onClick={this.closeModalEdit}>Cancel</Button>
           </ModalFooter>
         </Modal>
