@@ -13,7 +13,7 @@ import { Link } from "react-router-dom";
 
 const data = [
   
-  { id: 1, firstname: "Alejandro", dni: "29345789", typeofuser: "Technical Director" },
+  { id: 1, firstname: "Alejandro",lastname:"Sanchez", dni: "29345789", typeofuser: "Technical Director" },
   { id: 2, firstname: "Juan", lastname: "Perez", dni: "12345678", typeofuser: "Referee" },
   
   
@@ -84,6 +84,7 @@ class App extends React.Component {
   };
 
   closeModalEdit = () => {
+    this.setState({ modalUpdate: false });
   };
 
   edit = (form) => {
@@ -215,6 +216,10 @@ class App extends React.Component {
             <FormGroup>
               <label htmlFor="userType">Type of User</label>
               <select className="form-select" name="typeofuser" id="userType" required onChange={this.handleChange}>
+                <option value="Technical director">Technical director</option>
+                <option value="Player">Player</option>
+                <option value="Referee">Referee</option>
+                
               </select>
             </FormGroup>
             <FormGroup>
@@ -224,7 +229,7 @@ class App extends React.Component {
           </ModalBody>
 
           <ModalFooter>
-            <Button color="btn btn-outline-success" onClick={() => {}}>Insert</Button>
+            <Button color="btn btn-outline-success" onClick={() =>  this.modalInsert}>Insert</Button>
             <Button color="btn btn-outline-danger" onClick={this.closeModalInsert}>Cancel</Button>
           </ModalFooter>
         </Modal>
