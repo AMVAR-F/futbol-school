@@ -32,7 +32,7 @@ const LoginForm = ({ onLogin }) => {
             <Link to="/forgot-password">Forgot password?</Link>
           </div>
           <br />
-          <Link to="./index.js"> <button type="submit">Login</button></Link>
+           <button type="submit">Login</button>
          
           <div className="register-link">
             <p>
