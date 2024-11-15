@@ -14,8 +14,10 @@ const Code = React.lazy(() => import('./views/login/code'));
 const NewPassword = React.lazy(() => import('./views/login/newpassword'));
 const Registration = React.lazy(() => import('./views/users/Team/registration'));
 const Profile = React.lazy(() => import('./views/account/profile'));
+const Tournament = React.lazy(() => import('./views/matches/tournament/create'));
 
 import LoginForm from './views/login/LoginForm';
+
 
 const App = () => {
   const { isColorModeSet, setColorMode } = useColorModes('coreui-free-react-admin-template-theme');
@@ -61,6 +63,7 @@ const App = () => {
             <Route element={<DefaultLayout />}>
               <Route path="/users/Team" element={<Registration />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/matches/tournament" element={<Tournament />} />
               <Route path="*" element={<Navigate to="/profile" />} /> {/* Default route after login */}
             </Route>
           )}

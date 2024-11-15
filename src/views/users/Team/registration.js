@@ -9,31 +9,65 @@ import {
     ModalBody,
     FormGroup,
     ModalFooter,
+    Input,
+    Label
 } from "reactstrap";
+import { CFormSwitch } from "@coreui/react";  // Assuming CFormSwitch is imported from @coreui/react
 
 const initialData = [
-    { id: 1, name_team: "Tariba Lions", technical_director: "Alejandro Torres", color: "yellow and black", isActive: true },
-    { id: 2, name_team: "Peribeca Tigers", technical_director: "Luis Caceres", color: "red and black", isActive: true },
-    { id: 3, name_team: "Tucape Panthers", technical_director: "Pedro Vargas", color: "blue and black", isActive: true },
-    { id: 4, name_team: "Pirineos Bears", technical_director: "Alejo Torre", color: "green and black", isActive: true }
+    { id: 1, name_team: "Tariba Lions", technical_director: "Alejandro Torres", color: "yellow and black", isActive: true, homeColor: "#ffff00", awayColor: "#000000", members: [], photo: "" },
+    { id: 2, name_team: "Peribeca Tigers", technical_director: "Luis Caceres", color: "red and black", isActive: true, homeColor: "#ff0000", awayColor: "#000000", members: [], photo: "" },
+    { id: 3, name_team: "Tucape Panthers", technical_director: "Pedro Vargas", color: "blue and black", isActive: true, homeColor: "#0000ff", awayColor: "#000000", members: [], photo: "" },
+    { id: 4, name_team: "Pirineos Bears", technical_director: "Alejo Torre", color: "green and black", isActive: true, homeColor: "#00ff00", awayColor: "#000000", members: [], photo: "" }
 ];
+
+// Simulated Users
+const users = [
+    { id: 1, name: "Carlos Ruiz" },
+    { id: 2, name: "Ana Gómez" },
+    { id: 3, name: "Pedro Fernández" },
+    { id: 4, name: "María Torres" },
+];
+
+// Extract unique technical directors for dropdown
+const uniqueDirectors = [...new Set(initialData.map(team => team.technical_director))];
 
 const App = () => {
     const [data, setData] = useState(initialData);
-    const [modal, setModal] = useState({ insert: false, update: false, disable: false, view: false, enable: false });
-    const [selectedUser, setSelectedUser] = useState(null);
+    const [modal, setModal] = useState({ insert: false, update: false, view: false });
     const [form, setForm] = useState({
         id: "",
         name_team: "",
         technical_director: "",
         isActive: true,
-        color: ""
+        color: "",
+        members: [],
+        homeColor: "#ffffff",
+        awayColor: "#000000",
+        photo: ""
     });
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filteredUsers, setFilteredUsers] = useState(users);
 
     const toggleModal = (type, team = null) => {
         setModal((prevState) => ({ ...prevState, [type]: !prevState[type] }));
-        setSelectedUser(team);
-        if (type === "insert" || type === "update") setForm(team || { ...form, id: data.length + 1 });
+        if (type === "insert") {
+            setForm({
+                id: data.length + 1,
+                name_team: "",
+                technical_director: "",
+                isActive: true,
+                color: "",
+                members: [],
+                homeColor: "#ffffff",
+                awayColor: "#000000",
+                photo: ""
+            });
+        } else if (type === "update" && team) {
+            setForm(team);
+        } else if (type === "view" && team) {
+            setForm(team);
+        }
     };
 
     const handleChange = (e) => {
@@ -41,45 +75,70 @@ const App = () => {
         setForm((prevForm) => ({ ...prevForm, [name]: value }));
     };
 
-    //   const handleFileChange = (e) => {
-    //     const file = e.target.files[0];
-    //     if (file && file.size > 50 * 1024 * 1024) {
-    //       alert("File size exceeds 50 MB");
-    //     } else {
-    //       setForm((prevForm) => ({ ...prevForm, image: file }));
-    //     }
-    //   };
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setForm((prevForm) => ({ ...prevForm, photo: reader.result }));
+        };
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleStatusToggle = (id) => {
+        setData(prevData =>
+            prevData.map(team =>
+                team.id === id ? { ...team, isActive: !team.isActive } : team
+            )
+        );
+    };
+
+    const handleSearch = (e) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+        setFilteredUsers(users.filter(user => user.name.toLowerCase().includes(value.toLowerCase())));
+    };
+
+    const handleSelectMember = (user) => {
+        setForm((prevForm) => ({
+            ...prevForm,
+            members: prevForm.members.some(member => member.id === user.id)
+                ? prevForm.members
+                : [...prevForm.members, user]
+        }));
+    };
+
+    const handleRemoveMember = (userId) => {
+        setForm((prevForm) => ({
+            ...prevForm,
+            members: prevForm.members.filter(member => member.id !== userId)
+        }));
+    };
 
     const handleInsert = () => {
-        setData([...data, { ...form, isActive: true }]);
+        setData([...data, { ...form }]);
         toggleModal("insert");
     };
 
-    const handleEdit = () => {
-        setData(data.map((item) => (item.id === form.id ? form : item)));
+    const handleUpdate = () => {
+        setData(data.map(team => (team.id === form.id ? form : team)));
         toggleModal("update");
     };
 
-    const handleDisable = () => {
-        setData(data.map((item) => (item.id === selectedUser.id ? { ...item, isActive: false } : item)));
-        toggleModal("disable");
-    };
-    const handleEnable = () => {
-        setData(data.map((item) => (item.id === selectedUser.id ? { ...item, isActive: true } : item)));
-        toggleModal("enable");
-    };
-
-
     return (
         <Container>
-            <Button color="primary" onClick={() => toggleModal("insert")}>Create</Button>
+            <Button color="btn btn-outline-primary" onClick={() => toggleModal("insert")}>Create</Button>
             <Table>
                 <thead>
                     <tr>
                         <th>Id</th>
-                        <th>Name Team</th>
-                        <th>Technical director</th>
+                        <th>Photo</th>
+                        <th>Team Name</th>
+                        <th>Technical Director</th>
                         <th>Color</th>
+                        <th>Home Color</th>
+                        <th>Away Color</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -88,103 +147,133 @@ const App = () => {
                     {data.map((team) => (
                         <tr key={team.id} style={{ color: team.isActive ? "black" : "gray" }}>
                             <td>{team.id}</td>
+                            <td>
+                                {team.photo && <img src={team.photo} alt="Team" style={{ width: '50px', height: '50px' }} />}
+                            </td>
                             <td>{team.name_team}</td>
                             <td>{team.technical_director}</td>
                             <td>{team.color}</td>
-                            <td>{team.isActive ? "Active" : "Disabled"}</td>
                             <td>
-                                <Button color="success" onClick={() => toggleModal("update", team)} disabled={!team.isActive}>Edit</Button>{" "}
-                                <Button color="warning" onClick={() => toggleModal("disable", team)} disabled={!team.isActive}>Disable</Button>{" "}
-                                <Button color="primary" onClick={() => toggleModal("enable", team)} disabled={team.isActive}>Enable</Button>{" "}
-                                <Button color="info" onClick={() => toggleModal("view", team)}>View</Button>
-
+                                <span style={{ backgroundColor: team.homeColor, width: '20px', height: '20px', display: 'inline-block', borderRadius: '50%' }}></span>
+                            </td>
+                            <td>
+                                <span style={{ backgroundColor: team.awayColor, width: '20px', height: '20px', display: 'inline-block', borderRadius: '50%' }}></span>
+                            </td>
+                           
+                            <td>
+                                <CFormSwitch
+                                    label={team.isActive ? "Active" : "Disabled"}
+                                    id={`switch-${team.id}`}
+                                    defaultChecked={team.isActive}
+                                    onChange={() => handleStatusToggle(team.id)}
+                                />
+                            </td>
+                            <td>
+                                <Button color="btn btn-outline-info" onClick={() => toggleModal("view", team)}>View</Button>{" "}
+                                <Button color="btn btn-outline-success" onClick={() => toggleModal("update", team)}>Edit</Button>{" "}
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </Table>
 
-            {/* Modal de Inserción */}
-            <Modal isOpen={modal.insert} toggle={() => toggleModal("insert")}>
-                <ModalHeader toggle={() => toggleModal("insert")}>Insert team</ModalHeader>
+            {/* Insert and Edit Modal */}
+            <Modal isOpen={modal.insert || modal.update} toggle={() => toggleModal(modal.insert ? "insert" : "update")}>
+                <ModalHeader toggle={() => toggleModal(modal.insert ? "insert" : "update")}>
+                    {modal.insert ? "Insert Team" : "Edit Team"}
+                </ModalHeader>
                 <ModalBody>
                     <FormGroup>
-                        <label>Select Technical Director</label>
-                        <select
-                            name="technical_director"
-                            className="form-control"
-                            value={form.technical_director}
-                            onChange={handleChange}
-                        >
-                            <option value="">Select a technical director</option>
-                            {data.map((team, index) => (
-                                <option key={index} value={team.technical_director}>
-                                    {team.technical_director}
-                                </option>
+                        <Label>Team Name</Label>
+                        <Input type="text" name="name_team" value={form.name_team} onChange={handleChange} />
+                    </FormGroup>
+
+                    {/* Technical Director Dropdown */}
+                    <FormGroup>
+                        <Label>Technical Director</Label>
+                        <Input type="select" name="technical_director" value={form.technical_director} onChange={handleChange}>
+                            <option value="">Select a director</option>
+                            {uniqueDirectors.map((director, index) => (
+                                <option key={index} value={director}>{director}</option>
                             ))}
-                        </select>
+                        </Input>
                     </FormGroup>
-                </ModalBody>
-                <ModalFooter>
-                    <Button color="primary" onClick={handleInsert}>Insert</Button>
-                    <Button color="secondary" onClick={() => toggleModal("insert")}>Cancel</Button>
-                </ModalFooter>
-            </Modal>
 
-            {/* Modal de Edición */}
-            <Modal isOpen={modal.update} toggle={() => toggleModal("update")}>
-                <ModalHeader toggle={() => toggleModal("update")}>Edit team</ModalHeader>
-                <ModalBody>
+                    {/* Shirt Colors */}
                     <FormGroup>
-                        <label>DNI</label>
-                        <input type="text" name="dni" className="form-control" value={form.id} onChange={handleChange} required maxLength="8" />
+                        <Label>Home Shirt Color</Label>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <Input type="color" name="homeColor" value={form.homeColor} onChange={handleChange} />
+                            <span style={{ marginLeft: '10px', width: '20px', height: '20px', backgroundColor: form.homeColor, borderRadius: '50%' }}></span>
+                        </div>
                     </FormGroup>
-                    {/* Otros campos del formulario aquí */}
+
+                    <FormGroup>
+                        <Label>Away Shirt Color</Label>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <Input type="color" name="awayColor" value={form.awayColor} onChange={handleChange} />
+                            <span style={{ marginLeft: '10px', width: '20px', height: '20px', backgroundColor: form.awayColor, borderRadius: '50%' }}></span>
+                        </div>
+                    </FormGroup>
+
+                    {/* Photo Upload */}
+                    <FormGroup>
+                        <Label>Upload Photo</Label>
+                        <Input type="file" name="photo" onChange={handleFileChange} />
+                        {form.photo && <img src={form.photo} alt="Team" style={{ width: '100px', height: '100px', marginTop: '10px' }} />}
+                    </FormGroup>
+
+                    {/* Member Search */}
+                    <FormGroup>
+                        <Label>Search Members</Label>
+                        <Input type="text" placeholder="Search users..." value={searchTerm} onChange={handleSearch} />
+                        {searchTerm && (
+                            <ul style={{ maxHeight: '150px', overflowY: 'auto', listStyle: 'none', padding: 0 }}>
+                                {filteredUsers.map(user => (
+                                    <li key={user.id}>
+                                        <Button color="link" onClick={() => handleSelectMember(user)}>{user.name}</Button>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </FormGroup>
+
+                    {/* Selected Members */}
+                    <FormGroup>
+                        <Label>Selected Members</Label>
+                        <ul style={{ listStyle: 'none', padding: 0 }}>
+                            {form.members && form.members.map(member => (
+                                <li key={member.id}>
+                                    {member.name}
+                                    <Button close onClick={() => handleRemoveMember(member.id)} />
+                                </li>
+                            ))}
+                        </ul>
+                    </FormGroup>
                 </ModalBody>
                 <ModalFooter>
-                    <Button color="primary" onClick={handleEdit}>Save Changes</Button>
-                    <Button color="secondary" onClick={() => toggleModal("update")}>Cancel</Button>
+                    <Button color="primary" onClick={modal.insert ? handleInsert : handleUpdate}>{modal.insert ? "Insert" : "Update"}</Button>
+                    <Button color="secondary" onClick={() => toggleModal(modal.insert ? "insert" : "update")}>Cancel</Button>
                 </ModalFooter>
             </Modal>
 
-            {/* Modal de Habilitación */}
-            <Modal isOpen={modal.enable} toggle={() => toggleModal("enable")}>
-                <ModalHeader toggle={() => toggleModal("enable")}>Confirm Enable</ModalHeader>
-                <ModalBody>
-                    Are you sure you want to enable the team <b>{selectedUser && selectedUser.firstname}</b>?
-                </ModalBody>
-                <ModalFooter>
-                    <Button color="success" onClick={handleEnable}>Enable</Button>
-                    <Button color="secondary" onClick={() => toggleModal("enable")}>Cancel</Button>
-                </ModalFooter>
-            </Modal>
-
-
-            {/* Modal de Deshabilitación */}
-            <Modal isOpen={modal.disable} toggle={() => toggleModal("disable")}>
-                <ModalHeader toggle={() => toggleModal("disable")}>Confirm Disable</ModalHeader>
-                <ModalBody>
-                    Are you sure you want to disable the team <b>{selectedUser && selectedUser.firstname}</b>?
-                </ModalBody>
-                <ModalFooter>
-                    <Button color="warning" onClick={handleDisable}>Disable</Button>
-                    <Button color="secondary" onClick={() => toggleModal("disable")}>Cancel</Button>
-                </ModalFooter>
-            </Modal>
-
-            {/* Modal de Visualización */}
+            {/* View Modal */}
             <Modal isOpen={modal.view} toggle={() => toggleModal("view")}>
-                <ModalHeader toggle={() => toggleModal("view")}>team Details</ModalHeader>
+                <ModalHeader toggle={() => toggleModal("view")}>View Team Details</ModalHeader>
                 <ModalBody>
-                    {selectedUser && (
-                        <>
-                            <p><b>Id:</b> {selectedUser.id}</p>
-                            <p><b>First Name:</b> {selectedUser.id}</p>
-                            <p><b>Last Name:</b> {selectedUser.team_name}</p>
-                            <p><b>Color:</b> {selectedUser.color}</p>
-                            <p><b>Status:</b> {selectedUser.isActive ? "Active" : "Disabled"}</p>
-                        </>
-                    )}
+                <p><strong>Photo:</strong></p>
+                {form.photo && <img src={form.photo} alt="Team" style={{ width: '100px', height: '100px' }} />}
+                    <p><strong>Team Name:</strong> {form.name_team}</p>
+                    <p><strong>Technical Director:</strong> {form.technical_director}</p>
+                    <p><strong>Status:</strong> {form.isActive ? "Active" : "Disabled"}</p>
+                    <p><strong>Home Shirt Color:</strong> <span style={{ backgroundColor: form.homeColor, width: '20px', height: '20px', display: 'inline-block', borderRadius: '50%' }}></span></p>
+                    <p><strong>Away Shirt Color:</strong> <span style={{ backgroundColor: form.awayColor, width: '20px', height: '20px', display: 'inline-block', borderRadius: '50%' }}></span></p>
+                    <p><strong>Members:</strong></p>
+                    <ul>
+                        {form.members && form.members.map(member => (
+                            <li key={member.id}>{member.name}</li>
+                        ))}
+                    </ul>
                 </ModalBody>
                 <ModalFooter>
                     <Button color="secondary" onClick={() => toggleModal("view")}>Close</Button>
