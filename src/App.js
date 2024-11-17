@@ -16,6 +16,8 @@ const Registration = React.lazy(() => import('./views/users/Team/registration'))
 const Profile = React.lazy(() => import('./views/account/profile'));
 const Tournament = React.lazy(() => import('./views/matches/tournament/definition'));
 const Groups = React.lazy(() => import('./views/matches/groups/principal'));
+const Clashes = React.lazy(() => import('./views/matches/clashes/App'));
+const Results = React.lazy(() => import('./views/matches/results/result'));
 import LoginForm from './views/login/LoginForm';
 
 
@@ -65,6 +67,9 @@ const App = () => {
               <Route path="/profile" element={<Profile />} />
               <Route path="/matches/tournament" element={<Tournament />} />
               <Route path="/matches/groups" element={<Groups />} />
+              <Route path="/matches/clashes" element={<Clashes />} />
+              <Route path="/matches/results" element={<Results />} />
+
               <Route path="*" element={<Navigate to="/profile" />} /> 
             </Route>
           )}

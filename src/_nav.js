@@ -62,15 +62,16 @@ const _nav = [
       {
         component: CNavItem,
         name: 'Clashes',
-        to: '/base/breadcrumbs',
+        to: '/matches/clashes',
       },
       
     ],
   },
+  
   {
     component: CNavItem,
     name: 'Results',
-    to: '/account/profile',
+    to: '/matches/results',
     icon: <MdOutlineLibraryBooks style={{ color: 'white' }} className="nav-icon" />,
   },
   {

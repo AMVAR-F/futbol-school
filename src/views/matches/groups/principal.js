@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Container, Row, Col, Card, CardBody, CardHeader, ListGroup, ListGroupItem, Modal, ModalHeader, ModalBody, ModalFooter, Input, FormGroup, Label, Badge } from 'reactstrap';
-import { teamsData } from './initialData';
+import { teamsData } from './InitialData';
 import SearchTeamBar from './SearchTeamBar';
 
 const categories = [
