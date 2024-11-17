@@ -56,14 +56,15 @@ const _nav = [
       },
       {
         component: CNavItem,
-        name: 'Clashes',
-        to: '/base/breadcrumbs',
+        name: 'Groups',
+        to: '/matches/groups',
       },
       {
         component: CNavItem,
-        name: 'Categories',
-        to: '/base/cards',
+        name: 'Clashes',
+        to: '/base/breadcrumbs',
       },
+      
     ],
   },
   {

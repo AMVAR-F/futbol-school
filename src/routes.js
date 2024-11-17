@@ -5,6 +5,7 @@ const Users = React.lazy(() => import('./views/users/board'));
 const Profile = React.lazy(() => import('./views/account/profile'));
 const Registration = React.lazy(() => import('./views/users/Team/registration'));
 const Tournament = React.lazy(() => import('./views/matches/tournament/definition'));
+const Groups = React.lazy(() => import('./views/matches/groups/principal'));
 
 
 const routes = [
@@ -14,6 +15,7 @@ const routes = [
   { path: '/account/profile', name: 'Profile', element: Profile },
   { path: '/users/Team/', name: 'Registration', element: Registration },
   { path: '/matches/tournament', name: 'Tournament', element: Tournament },
+  { path: '/matches/groups', name: 'Groups', element: Groups },
 ];
 
 export default routes;
