@@ -52,7 +52,7 @@ const _nav = [
       {
         component: CNavItem,
         name: 'Define tournaments',
-        to: '/base/accordion',
+        to: '/matches/tournament/',
       },
       {
         component: CNavItem,
