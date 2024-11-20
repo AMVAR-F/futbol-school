@@ -1,5 +1,6 @@
 body {
   background-color: var(--cui-tertiary-bg);
+  --cui-tertiary-bg:#ffe180;
 }
 
 .wrapper {
@@ -28,7 +29,8 @@ body {
   .nav-link {
     display: flex;
     align-items: center;
-    min-height: calc(4rem + 1px); // stylelint-disable-line function-disallowed-list
+    min-height: calc(4rem + 1px);
+     // stylelint-disable-line function-disallowed-list
   }
 }
 
@@ -55,10 +57,12 @@ body {
   @include color-mode(dark) {
     body {
       background-color: var(--cui-dark-bg-subtle);
+     
     }
 
     .footer {
       --cui-footer-bg: var(--cui-body-bg);
+      --cui-body-bg:#ffe180;
     }
   }
 }

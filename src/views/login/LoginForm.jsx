@@ -1,14 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '../../css/login.css';
 import { FaRegUser, FaUserLock } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { CAvatar } from '@coreui/react';
 import Logo from './../../assets/images/logo.jpeg';
+import { useLogin } from './useLogin'; 
 
 const LoginForm = ({ onLogin }) => {
-  const handleSubmit = (e) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const { login, error } = useLogin();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onLogin();
+    const success = await login(username, password);
+    if (success) {
+      onLogin(); // Llama a onLogin para cambiar el estado en App.js
+    }
   };
 
   return (
@@ -19,13 +27,28 @@ const LoginForm = ({ onLogin }) => {
             <CAvatar src={Logo} className='logo-img' />
           </div>
           <div className="input-box">
-            <input type="text" name="username" placeholder="Username" required />
+            <input 
+              type="text" 
+              name="username" 
+              placeholder="Username" 
+              value={username} 
+              onChange={(e) => setUsername(e.target.value)} 
+              required 
+            />
             <FaRegUser className="icon" />
           </div>
           <div className="input-box">
-            <input type="password" name="password" placeholder="Password" required />
+            <input 
+              type="password" 
+              name="password" 
+              placeholder="Password" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+              required 
+            />
             <FaUserLock className="icon" />
           </div>
+          {error && <p className="error-message">{error}</p>} {/* Mostrar error si existe */}
           <div className="remember-forgot">
             <label>
               <input type="checkbox" /> Remember me

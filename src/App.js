@@ -8,6 +8,7 @@ import './scss/style.scss';
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'));
 
 // Pages
+const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'));
 const Register = React.lazy(() => import('./views/pages/register/Register'));
 const ForgotPassword = React.lazy(() => import('./views/login/forgot-password'));
 const Code = React.lazy(() => import('./views/login/code'));
@@ -20,11 +21,10 @@ const Clashes = React.lazy(() => import('./views/matches/clashes/App'));
 const Results = React.lazy(() => import('./views/matches/results/result'));
 import LoginForm from './views/login/LoginForm';
 
-
 const App = () => {
   const { isColorModeSet, setColorMode } = useColorModes('coreui-free-react-admin-template-theme');
   const storedTheme = useSelector((state) => state.theme);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('authToken'));
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.href.split('?')[1]);
@@ -39,7 +39,8 @@ const App = () => {
   }, [isColorModeSet, setColorMode, storedTheme]);
 
   const handleLogin = () => {
-    setIsAuthenticated(true); 
+    setIsAuthenticated(true);
+    localStorage.setItem('authToken', 'some-token'); // Simulación de autenticación
   };
 
   return (
@@ -47,7 +48,7 @@ const App = () => {
       <Suspense
         fallback={
           <div className="pt-3 text-center">
-            <CSpinner color="primary" variant="grow" />
+            <CSpinner color="light" variant="grow" />
           </div>
         }
       >
@@ -63,6 +64,7 @@ const App = () => {
             </>
           ) : (
             <Route element={<DefaultLayout />}>
+              <Route path="/dashboard" element={<Dashboard />} /> 
               <Route path="/users/Team" element={<Registration />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/matches/tournament" element={<Tournament />} />
@@ -70,7 +72,8 @@ const App = () => {
               <Route path="/matches/clashes" element={<Clashes />} />
               <Route path="/matches/results" element={<Results />} />
 
-              <Route path="*" element={<Navigate to="/profile" />} /> 
+              {/* Redirige a /dashboard si no hay coincidencia */}
+              <Route path="*" element={<Navigate to="/login" />} /> 
             </Route>
           )}
         </Routes>
