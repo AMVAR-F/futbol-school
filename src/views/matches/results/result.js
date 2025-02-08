@@ -1,32 +1,53 @@
-import React, { useState } from 'react';
-import { Table, Button, Modal, Form, Row, Col } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useState } from "react";
+import { Table, Button, Modal, Form, Row, Col } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+import GroupMenu from "../groups/GroupMenu"; 
+
+const categories = [
+  "Semillitas",
+  "Teteritos",
+  "Compoticas",
+  "Sub 7",
+  "Sub 9",
+  "Sub 11",
+  "Sub 13",
+  "Sub 17",
+  "Sub 20",
+  "Categoria Libre",
+  "Veteranos",
+  "Supra 50",
+];
 
 const MatchResults = () => {
   const [matches, setMatches] = useState([
-    { id: 1, team1: 'Equipo A', team2: 'Equipo B', status: 'Finalizado', score: '0-0' },
-    { id: 2, team1: 'Equipo C', team2: 'Equipo D', status: 'Finalizado', score: '0-0' },
+    { id: 1, team1: "Equipo A", team2: "Equipo B", status: "Finalizado", score: "0-0", category: "Sub 7" },
+    { id: 2, team1: "Equipo C", team2: "Equipo D", status: "Finalizado", score: "0-0", category: "Sub 9" },
   ]);
 
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [selectedMatch, setSelectedMatch] = useState(null);
   const [matchDetails, setMatchDetails] = useState({
-    score: '',
+    score: "",
     goals: [],
     cards: [],
     penalties: false,
-    penaltyScore: '',
+    penaltyScore: "",
   });
+
+  const handleCategorySelect = (category) => {
+    setSelectedCategory(category);
+  };
 
   const handleClose = () => {
     setShowModal(false);
     setSelectedMatch(null);
     setMatchDetails({
-      score: '',
+      score: "",
       goals: [],
       cards: [],
       penalties: false,
-      penaltyScore: '',
+      penaltyScore: "",
     });
   };
 
@@ -50,6 +71,14 @@ const MatchResults = () => {
 
   return (
     <div className="container mt-4">
+      {/* GroupMenu integration */}
+      <GroupMenu categories={categories} onCategorySelect={handleCategorySelect} />
+
+      {/* Category feedback */}
+      <h3 className="text-center mt-3">
+        {selectedCategory ? `Selected Category: ${selectedCategory}` : "Select a Category"}
+      </h3>
+
       <h2>Resultados de Partidos Finalizados</h2>
       <Table striped bordered hover>
         <thead>
@@ -62,19 +91,21 @@ const MatchResults = () => {
           </tr>
         </thead>
         <tbody>
-          {matches.map((match) => (
-            <tr key={match.id}>
-              <td>{match.team1}</td>
-              <td>{match.team2}</td>
-              <td>{match.status}</td>
-              <td>{match.score}</td>
-              <td>
-                <Button variant="primary" onClick={() => handleShow(match)}>
-                  Ingresar Resultados
-                </Button>
-              </td>
-            </tr>
-          ))}
+          {matches
+            .filter((match) => !selectedCategory || match.category === selectedCategory) // Filter by category
+            .map((match) => (
+              <tr key={match.id}>
+                <td>{match.team1}</td>
+                <td>{match.team2}</td>
+                <td>{match.status}</td>
+                <td>{match.score}</td>
+                <td>
+                  <Button variant="primary" onClick={() => handleShow(match)}>
+                    Ingresar Resultados
+                  </Button>
+                </td>
+              </tr>
+            ))}
         </tbody>
       </Table>
 
@@ -133,7 +164,9 @@ const MatchResults = () => {
                       label="¿Hubo penales?"
                       name="penalties"
                       checked={matchDetails.penalties}
-                      onChange={(e) => setMatchDetails({ ...matchDetails, penalties: e.target.checked })}
+                      onChange={(e) =>
+                        setMatchDetails({ ...matchDetails, penalties: e.target.checked })
+                      }
                     />
                   </Form.Group>
                 </Col>

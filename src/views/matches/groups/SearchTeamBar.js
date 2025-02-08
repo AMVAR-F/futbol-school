@@ -35,6 +35,7 @@ const SearchTeamBar = ({ onSelectTeam }) => {
         value={searchTerm}
         onChange={handleSearch}
         placeholder="Buscar equipo..."
+       
       />
       {filteredTeams.length > 0 && (
         <ListGroup style={{ position: "absolute", zIndex: 1000 }}>

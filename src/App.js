@@ -9,7 +9,7 @@ const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'));
 
 // Pages
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'));
-const Register = React.lazy(() => import('./views/pages/register/Register'));
+
 const ForgotPassword = React.lazy(() => import('./views/login/forgot-password'));
 const Code = React.lazy(() => import('./views/login/code'));
 const NewPassword = React.lazy(() => import('./views/login/newpassword'));
@@ -19,6 +19,7 @@ const Tournament = React.lazy(() => import('./views/matches/tournament/definitio
 const Groups = React.lazy(() => import('./views/matches/groups/principal'));
 const Clashes = React.lazy(() => import('./views/matches/clashes/App'));
 const Results = React.lazy(() => import('./views/matches/results/result'));
+const Payments = React.lazy(() => import('./views/payments/App'));
 import LoginForm from './views/login/LoginForm';
 
 const App = () => {
@@ -56,7 +57,7 @@ const App = () => {
           {!isAuthenticated ? (
             <>
               <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
-              <Route path="/register" element={<Register />} />
+              
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/code" element={<Code />} />
               <Route path="/newpassword" element={<NewPassword />} />
@@ -71,8 +72,9 @@ const App = () => {
               <Route path="/matches/groups" element={<Groups />} />
               <Route path="/matches/clashes" element={<Clashes />} />
               <Route path="/matches/results" element={<Results />} />
+              <Route path="/payments/payments" element={<Payments />} />
 
-              {/* Redirige a /dashboard si no hay coincidencia */}
+             
               <Route path="*" element={<Navigate to="/login" />} /> 
             </Route>
           )}

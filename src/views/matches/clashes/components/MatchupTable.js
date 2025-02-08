@@ -1,7 +1,7 @@
 import React from 'react';
 
 const MatchupTable = React.memo(({ matchups }) => {
-  // Crear una lista combinada de todos los partidos
+
   const allMatchups = Object.values(matchups).flat();
 
   return (
@@ -11,6 +11,7 @@ const MatchupTable = React.memo(({ matchups }) => {
         <thead>
           <tr>
             <th>Home Team</th>
+            <th></th>
             <th>Away Team</th>
             <th>Date</th>
             <th>Time</th>

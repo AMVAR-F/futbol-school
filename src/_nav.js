@@ -18,7 +18,7 @@ const _nav = [
     component: CNavItem,
     name: 'Dashboard',
     to: '/dashboard',
-    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilSpeedometer} className="nav-icon" />,
     badge: {
       color: 'info',
     },
@@ -31,13 +31,13 @@ const _nav = [
     component: CNavItem,
     name: 'Users',
     to: '/users/',
-    icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilUser} className="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'Team',
     to: '/users/Team/',
-    icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilGroup} className="nav-icon" />,
   },
   {
     component: CNavTitle,
@@ -75,6 +75,12 @@ const _nav = [
     icon: <MdOutlineLibraryBooks style={{ color: 'white' }} className="nav-icon" />,
   },
   {
+    component: CNavItem,
+    name: 'Payments',
+    to: '/payments/',
+    icon: <MdOutlineLibraryBooks style={{ color: 'white' }} className="nav-icon" />,
+  },
+  {
     component: CNavTitle,
     name: 'Referee',
   },
@@ -82,7 +88,7 @@ const _nav = [
     component: CNavItem,
     name: 'Report',
     to: '/users/',
-    icon: < GiWhistle icon={cilUser} customClassName="nav-icon" />,
+    icon: < GiWhistle icon={cilUser} className="nav-icon" />,
   },
   {
     component: CNavItem,

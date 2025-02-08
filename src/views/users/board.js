@@ -50,8 +50,8 @@ class App extends React.Component {
 
   handleFileChange = (event) => {
     const file = event.target.files[0];
-    if (file && file.size > 100 * 1024 * 1024) {
-      alert("File size exceeds 100 MB");
+    if (file && file.size > 50 * 1024 * 1024) {
+      alert("File size exceeds 50 MB");
       event.target.value = null;
     } else {
       this.setState({

@@ -1,129 +1,157 @@
-import React, { useState } from 'react';
-import { Button, Container, Row, Col, Card, CardBody, CardHeader, ListGroup, ListGroupItem, Modal, ModalHeader, ModalBody, ModalFooter, Input, FormGroup, Label, Badge } from 'reactstrap';
-import { teamsData } from './InitialData';
-import SearchTeamBar from './SearchTeamBar';
+import React, { useState } from "react";
+import { Container, Row, Col, Button, Card, CardBody, CardHeader, ListGroup, ListGroupItem, Badge, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import GroupMenu from "./GroupMenu";
+import SearchTeamBar from "./SearchTeamBar";
+import GroupModal from "./GroupModal";
 
 const categories = [
-  "Semillitas", "Teteritos", "Compoticas", "Sub7", "Sub9", "Sub11", "Sub13", "Sub17", "Sub20", 
-  "Categoria Libre", "Veteranos", "Supra 50"
+  "Semillitas", "Teteritos", "Compoticas", "Sub7", "Sub9", "Sub11", "Sub13", "Sub17",
+  "Sub20", "Categoria Libre", "Veteranos", "Supra50"
 ];
 
-const initialGroups = categories.reduce((acc, category) => {
-  acc[category] = Array.from({ length: 5 }, (_, index) => ({
-    name: String.fromCharCode(65 + index), // 'A', 'B', 'C', 'D', 'E'
-    head: null,
-    teams: []
-  }));
-  return acc;
-}, {});
-
 const App = () => {
-  const [groups, setGroups] = useState(initialGroups);
+  const [groups, setGroups] = useState({});
   const [assignHeadsModalOpen, setAssignHeadsModalOpen] = useState(false);
   const [enrollTeamsModalOpen, setEnrollTeamsModalOpen] = useState(false);
-  const [currentCategory, setCurrentCategory] = useState("");
-  const [selectedGroupIndex, setSelectedGroupIndex] = useState(0);
+  const [currentCategory, setCurrentCategory] = useState(null);
+  const [currentGroup, setCurrentGroup] = useState(null);
+  const [selectedTeam, setSelectedTeam] = useState(null);
+  const [groupModalOpen, setGroupModalOpen] = useState(false);
 
-  const toggleAssignHeadsModal = (category) => {
-    setCurrentCategory(category);
-    setAssignHeadsModalOpen(!assignHeadsModalOpen);
+  const toggleGroupModal = () => setGroupModalOpen(!groupModalOpen);
+
+  const initializeGroups = (num) => {
+    const initialGroups = Array.from({ length: num }, (_, index) => ({
+      name: String.fromCharCode(65 + index),
+      head: null,
+      teams: []
+    }));
+    setGroups({ ...groups, [currentCategory]: initialGroups });
   };
 
-  const toggleEnrollTeamsModal = (category, index) => {
+  const handleCategorySelect = (category) => {
     setCurrentCategory(category);
-    setSelectedGroupIndex(index);
+    if (!groups[category]) {
+      toggleGroupModal();
+    }
+  };
+
+  const toggleEnrollTeamsModal = (group) => {
+    setCurrentGroup(group);
     setEnrollTeamsModalOpen(!enrollTeamsModalOpen);
   };
-
-  const handleSelectHead = (team, groupIndex) => {
-    const updatedGroups = { ...groups };
-    updatedGroups[currentCategory][groupIndex].head = team;
-    setGroups(updatedGroups);
+  const toggleAssignHeadsModal = (group) => {
+    setCurrentGroup(group);
+    setAssignHeadsModalOpen(!assignHeadsModalOpen);
   };
+  
+  const handleAssignHead = (team) => {
+    const updatedGroups = { ...groups };
+    const groupIndex = updatedGroups[currentCategory].findIndex((group) => group.name === currentGroup);
+  
+    if (groupIndex !== -1) {
+      updatedGroups[currentCategory][groupIndex].head = team;
+      setGroups(updatedGroups);
+      setSelectedTeam(null);
+      toggleAssignHeadsModal();
+    }
+  };
+  
 
   const handleSelectTeam = (team) => {
     const updatedGroups = { ...groups };
-    const group = updatedGroups[currentCategory][selectedGroupIndex];
-    if (!group.teams.some(t => t.id === team.id)) {
+    const group = updatedGroups[currentCategory].find((g) => g.name === currentGroup);
+    if (!group.teams.some((t) => t.id === team.id)) {
       group.teams.push(team);
+      setGroups(updatedGroups);
     }
-    setGroups(updatedGroups);
   };
 
   const handleRemoveTeam = (teamId) => {
     const updatedGroups = { ...groups };
-    const group = updatedGroups[currentCategory][selectedGroupIndex];
-    group.teams = group.teams.filter(team => team.id !== teamId);
+    const group = updatedGroups[currentCategory].find((g) => g.name === currentGroup);
+    group.teams = group.teams.filter((team) => team.id !== teamId);
     setGroups(updatedGroups);
   };
 
   return (
     <Container>
-      <h2>Team Management</h2>
-      {categories.map(category => (
-        <div key={category}>
-          <h2>{category}</h2>
-          <Button color="primary" onClick={() => toggleAssignHeadsModal(category)}>Assign Group Heads</Button>
-          <Row className="mt-3">
-            {groups[category].map((group, index) => (
-              <Col md="6" key={group.name} className="mb-4">
-                <Card>
-                  <CardHeader className="bg-info text-white">Group {group.name}</CardHeader>
-                  <CardBody>
-                    <h5>Head: {group.head ? group.head.name : "Not Assigned"}</h5>
-                    <ListGroup className="mt-3">
-                      {group.teams.map(team => (
-                        <ListGroupItem key={team.id}>
-                          <Row className="align-items-center">
-                            <Col xs="3">
-                              <img src={team.image} alt={team.name} style={{ width: 30, borderRadius: "50%" }} />
-                            </Col>
-                            <Col>{team.name}</Col>
-                            <Col xs="2">
-                              <Badge color="danger" onClick={() => handleRemoveTeam(team.id)} style={{ cursor: 'pointer' }}>X</Badge>
-                            </Col>
-                          </Row>
-                        </ListGroupItem>
-                      ))}
-                    </ListGroup>
-                    <Button color="info" className="mt-3" onClick={() => toggleEnrollTeamsModal(category, index)}>Enroll Teams</Button>
-                  </CardBody>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        </div>
-      ))}
+      <h2>Division</h2>
 
-      {/* Modal Assign Heads */}
-      <Modal isOpen={assignHeadsModalOpen} toggle={() => toggleAssignHeadsModal("")}>
-        <ModalHeader toggle={() => toggleAssignHeadsModal("")} className="bg-primary text-white">Assign Group Heads for {currentCategory}</ModalHeader>
-        <ModalBody>
-          {groups[currentCategory]?.map((group, index) => (
-            <div key={index}>
-              <h5>Group {group.name}</h5>
-              <SearchTeamBar onSelectTeam={(team) => handleSelectHead(team, index)} />
-              {group.head && (
-                <ListGroup className="mt-2">
-                  <ListGroupItem>{group.head.name}</ListGroupItem>
+      <GroupMenu categories={categories} onCategorySelect={handleCategorySelect} />
+
+      <Row className="mt-3">
+        {currentCategory && groups[currentCategory]?.map((group) => (
+          <Col md="6" key={group.name} className="mb-4">
+            <Card>
+              <CardHeader className="bg-info text-white">Group {group.name}</CardHeader>
+              <CardBody>
+                <h5>Head: {group.head ? group.head.name : "Not Assigned"}</h5>
+                <ListGroup className="mt-3">
+                  {group.teams.map((team) => (
+                    <ListGroupItem key={team.id}>
+                      <Row className="align-items-center">
+                        <Col xs="3">
+                          <img src={team.image} alt={team.name} style={{ width: 30, borderRadius: "50%" }} />
+                        </Col>
+                        <Col>{team.name}</Col>
+                        <Col xs="2">
+                          <Badge color="danger" onClick={() => handleRemoveTeam(team.id)} style={{ cursor: 'pointer' }}>
+                            X
+                          </Badge>
+                        </Col>
+                      </Row>
+                    </ListGroupItem>
+                  ))}
                 </ListGroup>
-              )}
+                <Button color="info" className="mt-3" onClick={() => toggleEnrollTeamsModal(group.name)} style={{ margin: "5px" }}>
+                  Enroll Teams
+                </Button>
+                <Button color="warning" className="mt-3 ml-2" onClick={() => toggleAssignHeadsModal(group.name)}>
+  Assign Group Head
+</Button>
+
+              </CardBody>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+
+      <GroupModal
+        isOpen={groupModalOpen}
+        toggle={toggleGroupModal}
+        onSubmit={initializeGroups}
+      />
+
+      <Modal isOpen={assignHeadsModalOpen} toggle={toggleAssignHeadsModal}>
+        <ModalHeader toggle={toggleAssignHeadsModal} className="bg-info text-white">
+          Assign Group Head for {currentCategory} - Group {currentGroup}
+        </ModalHeader>
+        <ModalBody>
+          <SearchTeamBar onSelectTeam={(team) => setSelectedTeam(team)} />
+          {selectedTeam && (
+            <div className="mt-3">
+              <h5>Selected Head: {selectedTeam.name}</h5>
+              <Button color="success" onClick={() => handleAssignHead(selectedTeam)}>Assign Head</Button>
             </div>
-          ))}
+          )}
         </ModalBody>
         <ModalFooter>
-          <Button color="secondary" onClick={() => toggleAssignHeadsModal("")}>Close</Button>
+          <Button color="secondary" onClick={toggleAssignHeadsModal}>
+            Close
+          </Button>
         </ModalFooter>
       </Modal>
 
-      {/* Modal Enroll Teams */}
-      <Modal isOpen={enrollTeamsModalOpen} toggle={() => toggleEnrollTeamsModal("", 0)}>
-        <ModalHeader toggle={() => toggleEnrollTeamsModal("", 0)} className="bg-primary text-white">Enroll Teams in {currentCategory} - Group {groups[currentCategory]?.[selectedGroupIndex]?.name}</ModalHeader>
+      <Modal isOpen={enrollTeamsModalOpen} toggle={() => setEnrollTeamsModalOpen(false)}>
+        <ModalHeader toggle={() => setEnrollTeamsModalOpen(false)} className="bg-primary text-white">
+          Enroll Teams in {currentCategory} - Group {currentGroup}
+        </ModalHeader>
         <ModalBody>
           <SearchTeamBar onSelectTeam={handleSelectTeam} />
-          {groups[currentCategory]?.[selectedGroupIndex]?.teams.length > 0 && (
+          {groups[currentCategory]?.find((group) => group.name === currentGroup)?.teams.length > 0 && (
             <ListGroup className="mt-2">
-              {groups[currentCategory][selectedGroupIndex].teams.map(team => (
+              {groups[currentCategory]?.find((group) => group.name === currentGroup)?.teams.map((team) => (
                 <ListGroupItem key={team.id}>
                   <Row className="align-items-center">
                     <Col xs="3">
@@ -131,7 +159,9 @@ const App = () => {
                     </Col>
                     <Col>{team.name}</Col>
                     <Col xs="2">
-                      <Badge color="danger" onClick={() => handleRemoveTeam(team.id)} style={{ cursor: 'pointer' }}>X</Badge>
+                      <Badge color="danger" onClick={() => handleRemoveTeam(team.id)} style={{ cursor: 'pointer' }}>
+                        X
+                      </Badge>
                     </Col>
                   </Row>
                 </ListGroupItem>
@@ -140,7 +170,9 @@ const App = () => {
           )}
         </ModalBody>
         <ModalFooter>
-          <Button color="secondary" onClick={() => toggleEnrollTeamsModal("", 0)}>Close</Button>
+          <Button color="secondary" onClick={() => setEnrollTeamsModalOpen(false)}>
+            Close
+          </Button>
         </ModalFooter>
       </Modal>
     </Container>

@@ -21,6 +21,7 @@ import moment from "moment";
 import SearchTeamBar from './SearchTeamBar';
 import EditTournamentModal from './EditTournamentModal';
 import ViewTournamentModal from "./ViewTournamentModal"
+import GroupMenu from '../groups/GroupMenu'
 
 const { RangePicker } = DatePicker;
 
@@ -89,7 +90,13 @@ const App = () => {
     end_inscriptions: "",
     category: "",
   });
-
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const handleCategorySelect = (category) => {
+    console.log("Categoría seleccionada:", category);
+    const filteredTournaments = initialData.filter(tournament => tournament.category === category);
+    setDataList(filteredTournaments);
+   
+  };
   // Estados y funciones del modal de edición
   const [modalEdit, setModalEdit] = useState(false);
   const [currentTournament, setCurrentTournament] = useState(null);
@@ -193,6 +200,7 @@ const closeViewModal = () => setModalView(false);
 
   return (
     <Container>
+        <GroupMenu categories={categories} onCategorySelect={handleCategorySelect} />
       <Button color="primary" onClick={viewModalInsert}>
         Create Tournament
       </Button>
@@ -201,7 +209,6 @@ const closeViewModal = () => setModalView(false);
           <tr>
             <th>ID</th>
             <th>Name</th>
-            <th>Category</th>
             <th>Status</th>
             <th>Start Date</th>
             <th>End Date</th>
@@ -213,7 +220,7 @@ const closeViewModal = () => setModalView(false);
             <tr key={tournament.championship_id}>
               <td>{tournament.championship_id}</td>
               <td>{tournament.championship_name}</td>
-              <td>{tournament.category}</td>
+              
               <td>
                 <Dropdown
                   isOpen={dropdownOpen === tournament.championship_id}

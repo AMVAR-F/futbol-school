@@ -22,7 +22,7 @@ const EnrollTeamsModal = ({ isOpen, toggle, groups, setGroups, selectedCategory,
 
   return (
     <Modal isOpen={isOpen} toggle={toggle}>
-      <ModalHeader toggle={toggle} className="bg-primary text-white">Enroll Teams in {selectedCategory} Group {selectedGroup}</ModalHeader>
+      <ModalHeader toggle={toggle} className="bg-info text-white">Enroll Teams in {selectedCategory} Group {selectedGroup}</ModalHeader>
       <ModalBody>
         <SearchTeamBar onSelectTeam={handleSelectTeam} />
         {groups[selectedCategory] && groups[selectedCategory][selectedGroup].teams.length > 0 && (
